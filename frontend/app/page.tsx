@@ -82,126 +82,151 @@ export default function Home() {
           </p>
         </header>
 
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
               コースを探す
             </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  希望するコースタイプ
-                </label>
-                <select 
-                  value={courseType}
-                  onChange={(e) => setCourseType(e.target.value as any)}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="walking">散歩コース</option>
-                  <option value="cycling">サイクリングコース</option>
-                  <option value="jogging">ジョギングコース</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  距離の希望
-                </label>
-                <select 
-                  value={distance}
-                  onChange={(e) => setDistance(e.target.value as any)}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="short">短距離（1-3km）</option>
-                  <option value="medium">中距離（3-10km）</option>
-                  <option value="long">長距離（10km以上）</option>
-                </select>
-              </div>
-
-              {/* Location Selection */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  出発地点
-                </label>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column - Course Preferences */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">
+                  コース設定
+                </h3>
                 
-                {/* Current Location Button */}
-                <div className="mb-3">
-                  <CurrentLocationButton
-                    onLocationFound={handleLocationFound}
-                    showAccuracy={true}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Address Search */}
-                <div className="mb-3">
-                  <AddressSearch
-                    onLocationSelect={handleAddressSelect}
-                    currentLocation={selectedLocation}
-                    placeholder="住所や駅名で検索..."
-                  />
-                </div>
-
-                {/* Map Picker Toggle */}
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowLocationPicker(!showLocationPicker)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    希望するコースタイプ
+                  </label>
+                  <select 
+                    value={courseType}
+                    onChange={(e) => setCourseType(e.target.value as any)}
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    {showLocationPicker ? '地図を閉じる' : '地図で選択'}
-                  </button>
+                    <option value="walking">🚶 散歩コース</option>
+                    <option value="cycling">🚴 サイクリングコース</option>
+                    <option value="jogging">🏃 ジョギングコース</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    距離の希望
+                  </label>
+                  <select 
+                    value={distance}
+                    onChange={(e) => setDistance(e.target.value as any)}
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="short">📍 短距離（1-3km）</option>
+                    <option value="medium">📍 中距離（3-10km）</option>
+                    <option value="long">📍 長距離（10km以上）</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Right Column - Location Selection */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium text-gray-800 border-b border-gray-200 pb-2">
+                  出発地点
+                </h3>
+                
+                {/* Location Options */}
+                <div className="space-y-3">
+                  {/* Current Location Button */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      📍 現在地を使用
+                    </label>
+                    <CurrentLocationButton
+                      onLocationFound={handleLocationFound}
+                      showAccuracy={false}
+                      className="w-full"
+                    />
+                  </div>
+
+                  {/* Address Search */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      🔍 住所・駅名で検索
+                    </label>
+                    <AddressSearch
+                      onLocationSelect={handleAddressSelect}
+                      currentLocation={selectedLocation}
+                      placeholder="例: 渋谷駅、東京タワー"
+                    />
+                  </div>
+
+                  {/* Map Picker Toggle */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      🗺️ 地図で選択
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowLocationPicker(!showLocationPicker)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
+                      </svg>
+                      {showLocationPicker ? '地図を閉じる' : '地図で位置を選択'}
+                    </button>
+                  </div>
                 </div>
 
-                {/* Location Preview */}
-                <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                {/* Location Preview - Compact */}
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-sm text-blue-700">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <span className="font-medium">選択された位置:</span>
+                    <span className="font-medium">
+                      {locationMethod === 'current' && '📍 現在地'}
+                      {locationMethod === 'search' && '🔍 検索結果'}
+                      {locationMethod === 'map' && '🗺️ 地図選択'}
+                    </span>
                   </div>
-                  <div className="text-sm text-gray-700 mt-1">
-                    緯度: {selectedLocation.latitude.toFixed(6)}, 経度: {selectedLocation.longitude.toFixed(6)}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {locationMethod === 'current' && '現在地を使用'}
-                    {locationMethod === 'search' && '住所検索で選択'}
-                    {locationMethod === 'map' && '地図で選択'}
+                  <div className="text-xs text-blue-600 mt-1">
+                    {selectedLocation.latitude.toFixed(4)}, {selectedLocation.longitude.toFixed(4)}
                   </div>
                 </div>
-
-                {/* Map Picker */}
-                {showLocationPicker && (
-                  <div className="mt-3">
-                    <LocationPicker
-                      onLocationSelect={handleMapLocationSelect}
-                      initialLocation={selectedLocation}
-                      height="250px"
-                      zoom={15}
-                      showAddressPreview={true}
-                    />
-                  </div>
-                )}
               </div>
+            </div>
+
+            {/* Map Picker - Full Width */}
+            {showLocationPicker && (
+              <div className="mt-6 border-t border-gray-200 pt-6">
+                <LocationPicker
+                  onLocationSelect={handleMapLocationSelect}
+                  initialLocation={selectedLocation}
+                  height="300px"
+                  zoom={15}
+                  showAddressPreview={true}
+                />
+              </div>
+            )}
+
+            {/* Search Button - Full Width */}
+            <div className="mt-6 border-t border-gray-200 pt-6">
 
               <button 
                 onClick={handleSearch}
                 disabled={isLoading}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl text-lg"
               >
                 {isLoading ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                     <span>AIがコースを考えています...</span>
                   </>
                 ) : (
                   <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                     </svg>
-                    <span>AIにコースを提案してもらう</span>
+                    <span>🤖 AIにコースを提案してもらう</span>
                   </>
                 )}
               </button>
@@ -209,9 +234,16 @@ export default function Home() {
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              提案されたコース
-            </h3>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-800">
+                提案されたコース
+              </h3>
+            </div>
             
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
