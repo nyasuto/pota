@@ -6,9 +6,21 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"potarin-backend/config"
+	"potarin-backend/handlers"
+	"potarin-backend/services"
 )
 
 func main() {
+	// Load configuration
+	cfg := config.Load()
+
+	// Initialize services
+	openaiService := services.NewOpenAIService(cfg.OpenAIAPIKey)
+
+	// Initialize handlers
+	courseHandler := handlers.NewCourseHandler(openaiService)
+
 	app := fiber.New()
 
 	// Middleware
@@ -20,12 +32,13 @@ func main() {
 	}))
 
 	// Routes
-	setupRoutes(app)
+	setupRoutes(app, courseHandler)
 
-	log.Fatal(app.Listen(":8080"))
+	log.Printf("Server starting on port %s", cfg.Port)
+	log.Fatal(app.Listen(":" + cfg.Port))
 }
 
-func setupRoutes(app *fiber.App) {
+func setupRoutes(app *fiber.App, courseHandler *handlers.CourseHandler) {
 	api := app.Group("/api/v1")
 
 	// Health check
@@ -37,22 +50,8 @@ func setupRoutes(app *fiber.App) {
 	})
 
 	// Course suggestions endpoint
-	api.Post("/suggestions", handleSuggestions)
+	api.Post("/suggestions", courseHandler.GetSuggestions)
 
 	// Course details endpoint
-	api.Post("/details", handleDetails)
-}
-
-func handleSuggestions(c *fiber.Ctx) error {
-	// TODO: Implement AI-powered course suggestions
-	return c.JSON(fiber.Map{
-		"message": "Course suggestions endpoint - Coming soon",
-	})
-}
-
-func handleDetails(c *fiber.Ctx) error {
-	// TODO: Implement course details with waypoints
-	return c.JSON(fiber.Map{
-		"message": "Course details endpoint - Coming soon",
-	})
+	api.Post("/details", courseHandler.GetDetails)
 }
