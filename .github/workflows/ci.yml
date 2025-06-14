@@ -15,7 +15,7 @@ on:
 
 env:
   # Global environment variables
-  GO_VERSION: 'latest'
+  GO_VERSION: 'stable'
   BUN_VERSION: 'latest'
 
 jobs:
