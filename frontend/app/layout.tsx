@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import PageErrorBoundary from '../components/PageErrorBoundary'
 
 export const metadata: Metadata = {
   title: 'ポタりん V2',
@@ -13,7 +14,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body>
+        <PageErrorBoundary>
+          {children}
+        </PageErrorBoundary>
+      </body>
     </html>
   )
 }

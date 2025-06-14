@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { Waypoint } from '../../shared/types';
+import ComponentErrorBoundary from './ComponentErrorBoundary';
+import { useErrorHandler } from './ErrorBoundary';
 
 interface CourseMapProps {
   waypoints: Waypoint[];
@@ -57,6 +59,7 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const mapInstanceRef = useRef<any>(null);
   const isInitializingRef = useRef(false);
+  const reportError = useErrorHandler();
 
   useEffect(() => {
     // Capture ref value at the start of the effect
@@ -224,6 +227,7 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
 
       } catch (error) {
         console.error('Failed to initialize map:', error);
+        reportError(error as Error, 'Map initialization failed');
         setIsLoaded(false);
       } finally {
         isInitializingRef.current = false;
@@ -257,7 +261,7 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
       
       setIsLoaded(false);
     };
-  }, [waypoints]);
+  }, [waypoints, reportError]);
 
   if (waypoints.length === 0) {
     return (
@@ -297,5 +301,12 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
 }
 
 export default function CourseMap({ waypoints, className = '' }: CourseMapProps) {
-  return <DynamicMap waypoints={waypoints} className={className} />;
+  return (
+    <ComponentErrorBoundary 
+      componentName="地図コンポーネント"
+      level="section"
+    >
+      <DynamicMap waypoints={waypoints} className={className} />
+    </ComponentErrorBoundary>
+  );
 }
