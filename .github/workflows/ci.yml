@@ -1,5 +1,9 @@
 name: CI
 
+# Add this block at the top of the CI workflow file
+permissions:
+  security-events: write
+
 on:
   push:
     branches: [main]
