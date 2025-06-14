@@ -351,6 +351,7 @@ When contributing to this project:
 
 1. **Verify frontend builds**: Run `bun run build` to ensure code changes don't break compilation
 1. **Verify backend builds**: Run `go build ./...` to ensure code changes don't break compilation
+1. **Verify backend builds**: Run `go fmt ./...` to ensure code changes don't break compilation
 1. **Verify backend builds**: Run `go test ./...` to ensure code changes don't break compilation
 1. Run all quality checks before submitting PR
 1. Update documentation for new features
