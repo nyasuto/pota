@@ -350,10 +350,11 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 When contributing to this project:
 
 1. **Verify frontend builds**: Run `bun run build` to ensure code changes don't break compilation
-2. Run all quality checks before submitting PR
-3. Update documentation for new features
-4. Test on clean macOS environment
-5. Follow the established code style
+2. **Verify backend builds**: Run `go build ./...` to ensure code changes don't break compilation
+3. Run all quality checks before submitting PR
+4. Update documentation for new features
+5. Test on clean macOS environment
+6. Follow the established code style
 
 ## Git Workflow for Claude Code
 
