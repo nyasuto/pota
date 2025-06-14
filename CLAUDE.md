@@ -232,7 +232,8 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 1. Define types in `/shared` first ✅
 2. Implement backend endpoints with validation 🚧 (In Progress)
 3. Create frontend components with type safety ⏳
-4. Test integration between all layers ⏳
+4. **Verify frontend builds**: Run `bun run build` to ensure frontend compiles
+5. Test integration between all layers ⏳
 
 ### Current Technical Achievements
 - **OpenAI SDK**: Integrated sashabaranov/go-openai v1.40.1
@@ -329,10 +330,11 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 
 When contributing to this project:
 
-1. Run all quality checks before submitting PR
-2. Update documentation for new features
-3. Test on clean macOS environment
-4. Follow the established code style
+1. **Verify frontend builds**: Run `bun run build` to ensure code changes don't break compilation
+2. Run all quality checks before submitting PR
+3. Update documentation for new features
+4. Test on clean macOS environment
+5. Follow the established code style
 
 ## Git Workflow for Claude Code
 
