@@ -1,0 +1,26 @@
+{
+  "name": "potarin-shared",
+  "version": "0.1.0",
+  "description": "Shared types and schemas for Potarin V2",
+  "main": "types.ts",
+  "types": "types.ts",
+  "files": [
+    "types.ts",
+    "api-constants.ts",
+    "schemas.json"
+  ],
+  "scripts": {
+    "validate-schemas": "ajv validate -s schemas.json -d \"test-data/*.json\"",
+    "type-check": "tsc --noEmit types.ts"
+  },
+  "keywords": [
+    "typescript",
+    "json-schema",
+    "api",
+    "types"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "ajv-cli": "^5.0.0"
+  }
+}
