@@ -45,16 +45,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Course detail pages**: Dynamic routing with waypoint visualization
 - **Responsive design**: Desktop and mobile optimized
 
-### 🚧 Current Phase: Map Visualization
-- **Next Priority**: React-Leaflet integration
-- **Ready for**: Interactive map with waypoint markers and route lines
-- **Architecture**: Frontend and backend fully functional
+### ✅ Completed (Phase 4: Map Visualization)
+- **React-Leaflet Integration**: Interactive map component with Leaflet v1.9.4
+- **Waypoint Markers**: Custom SVG markers with color coding (start/end/checkpoint/landmark)  
+- **Route Visualization**: Polyline drawing between waypoints with real route paths
+- **Interactive Features**: Popup markers with detailed waypoint information
+- **SSR Compatibility**: Dynamic imports and client-side only rendering for Next.js 15
 
-### 📋 Next Steps (Phase 4: Map Features)
-1. **React-Leaflet Integration**: Interactive map component
-2. **Waypoint Markers**: Visual route points with popups  
-3. **Route Visualization**: Polyline drawing between waypoints
-4. **Interactive Features**: Click events and map controls
+### 🚧 Current Phase: Map Refinement & Testing
+- **Issue Resolution**: Fixing map initialization errors and SSR issues
+- **Ready for**: Production-ready map visualization
+- **Architecture**: Full-stack with interactive map visualization
 
 ## ⚠️ CRITICAL: Branch Protection Rules
 
@@ -257,6 +258,9 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 - **Responsive UI**: Mobile-optimized design with Tailwind CSS v4
 - **Environment Config**: .env.local → .env fallback system
 - **Real-time Features**: Interactive course search and AI suggestions
+- **Map Visualization**: Interactive Leaflet maps with custom markers and route polylines
+- **SSR Compatibility**: Client-side only map rendering with proper cleanup
+- **Issue Resolution**: Systematic debugging and branch protection workflow
 
 ## Dependencies
 
@@ -373,3 +377,81 @@ When implementing new features or fixes:
 3. **Make focused commits**: Single purpose per commit
 4. **Write clear commit messages**: Explain what and why
 5. **Create PR for review**: All main branch changes via PR
+
+## 🔧 Lessons Learned & Technical Insights
+
+### Map Integration with Next.js 15 (2025-06-14)
+
+**Challenge**: Leaflet map library integration with Next.js 15 SSR
+- **Issue**: "window is not defined" and "Map container is already initialized" errors
+- **Root Cause**: Leaflet expects browser environment but Next.js pre-renders on server
+
+**Solution Approach**:
+1. **Dynamic Imports with SSR Disabled**: Use `dynamic()` with `ssr: false`
+2. **Complete Container Cleanup**: Clear innerHTML and Leaflet-specific attributes before re-initialization
+3. **Initialization Guards**: Use ref flags to prevent concurrent map creation
+4. **Proper Cleanup**: Remove map instances and DOM attributes in useEffect cleanup
+5. **Ref Value Capture**: Capture ref values at effect start to avoid stale closures
+
+**Key Implementation Pattern**:
+```typescript
+const DynamicMap = dynamic(() => Promise.resolve(MapComponent), {
+  ssr: false,
+  loading: () => <LoadingSpinner />
+});
+
+// In MapComponent:
+const isInitializingRef = useRef(false);
+const containerElement = mapRef.current; // Capture at effect start
+
+// Cleanup before initialization:
+if (containerElement) {
+  containerElement.innerHTML = '';
+  (containerElement as any)._leaflet_id = undefined;
+  containerElement.removeAttribute('data-leaflet-id');
+}
+```
+
+### Branch Protection Workflow Enforcement
+
+**Critical Learning**: Always check current branch before any commit operation
+- **Issue**: Accidentally committed directly to main branch during bug fix
+- **Solution**: Use `git status` first, then `git reset --soft HEAD~1` to undo, create feature branch
+- **Prevention**: Make branch checking the first step of any commit workflow
+
+**Proper Fix Workflow**:
+```bash
+git status                    # Always check first
+git reset --soft HEAD~1      # Undo main branch commit
+git checkout -b fix/issue-35  # Create feature branch  
+git commit -m "Fix message"   # Commit on feature branch
+git push -u origin fix/issue-35
+gh pr create                  # Create PR for review
+```
+
+### Issue Management Best Practices
+
+**Learning**: Don't close GitHub issues until PR is reviewed and merged
+- **Reason**: Issues should remain open for tracking until fix is verified
+- **Process**: Create PR → Get review → Merge → Then close issue
+- **Documentation**: Link PR to issue but keep issue open for tracking
+
+### Next.js 15 + React 19 Compatibility
+
+**TypeScript Changes**: Page props now use Promise-based types
+```typescript
+// Old Next.js 14:
+interface PageProps {
+  params: { id: string };
+}
+
+// New Next.js 15:
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+```
+
+**React Hooks Dependency Management**:
+- Use ESLint disable comments sparingly and only when justified
+- Capture ref values at effect start to avoid stale closure warnings
+- Clean up resources properly in useEffect return functions
