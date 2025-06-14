@@ -30,7 +30,7 @@ func (s *OpenAIService) GenerateCourseSuggestions(ctx context.Context, request C
 		Messages: []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleSystem,
-				Content: "You are an expert local guide who suggests optimal walking, cycling, and jogging routes based on user preferences. Always respond with valid JSON matching the provided schema.",
+				Content: "あなたは東京エリアの地域ガイド専門家です。ユーザーの希望に基づいて最適な散歩、サイクリング、ジョギングコースを提案してください。回答は必ず日本語で行い、提供されたJSONスキーマに厳密に従ってください。すべてのテキストフィールド（title, description, highlights, summary等）は日本語で記述してください。",
 			},
 			{
 				Role:    openai.ChatMessageRoleUser,
@@ -76,7 +76,7 @@ func (s *OpenAIService) GenerateCourseDetails(ctx context.Context, suggestion Co
 		Messages: []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleSystem,
-				Content: "You are an expert route planner who creates detailed course information with specific waypoints and landmarks. Always respond with valid JSON matching the provided schema.",
+				Content: "あなたは東京エリアのルート設計専門家です。具体的なウェイポイントとランドマークを含む詳細なコース情報を作成してください。回答は必ず日本語で行い、提供されたJSONスキーマに厳密に従ってください。すべてのテキストフィールド（title, description等）は日本語で記述してください。",
 			},
 			{
 				Role:    openai.ChatMessageRoleUser,
@@ -159,16 +159,17 @@ func (s *OpenAIService) buildSuggestionPrompt(request CourseRequest) string {
 	prompt += `
 
 各コースには以下を含めてください:
-- 魅力的なタイトル
-- コースの特徴と見どころの説明
+- 魅力的なタイトル（日本語）
+- コースの特徴と見どころの説明（日本語）
 - 正確な距離（km）
 - 推定所要時間（分）
 - 難易度レベル
 - 出発地点の緯度経度
-- ハイライト（見どころ）リスト
-- コースの概要
+- ハイライト（見どころ）リスト（日本語）
+- コースの概要（日本語）
 
-実在する東京の場所を基にして、具体的で実用的なコースを提案してください。`
+実在する東京の場所を基にして、具体的で実用的なコースを提案してください。
+**重要**: すべてのテキスト内容は必ず日本語で記述してください。英語は使用しないでください。`
 
 	return prompt
 }
@@ -181,12 +182,13 @@ func (s *OpenAIService) buildDetailsPrompt(suggestion CourseSuggestion) string {
 以下の詳細情報を含めてください:
 - 具体的なwaypoint（スタート地点、チェックポイント、ランドマーク、ゴール地点）
 - 各waypointの緯度経度座標
-- waypoint間の説明
-- コース全体の詳細な説明
+- waypoint間の説明（日本語）
+- コース全体の詳細な説明（日本語）
 - 高低差情報（あれば）
 
 実在する東京の場所を基にして、実際に歩ける/走れる/自転車で移動できるルートを設計してください。
-各waypointには分かりやすいタイトルと説明を付けてください。`,
+各waypointには分かりやすいタイトルと説明を付けてください。
+**重要**: すべてのテキスト内容（title, description等）は必ず日本語で記述してください。英語は使用しないでください。`,
 		suggestion.Title,
 		suggestion.Description)
 }
