@@ -74,44 +74,15 @@ export default function CurrentLocationButton({
     if (error) {
       switch (error.type) {
         case 'PERMISSION_DENIED':
-          return (
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L5.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <span>位置情報が無効</span>
-            </div>
-          );
+          return <span>位置情報が無効</span>;
         case 'TIMEOUT':
-          return (
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>タイムアウト - 再試行</span>
-            </div>
-          );
+          return <span>タイムアウト - 再試行</span>;
         default:
-          return (
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L5.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <span>位置情報の取得に失敗</span>
-            </div>
-          );
+          return <span>位置情報の取得に失敗</span>;
       }
     }
 
-    return (
-      <div className="flex items-center gap-2">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <span>現在地を使用</span>
-      </div>
-    );
+    return <span>現在地を使用</span>;
   };
 
   const getButtonStyle = () => {
