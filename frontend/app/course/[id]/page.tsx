@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCourseDetails } from '../../../hooks/useCourses';
+import CourseMap from '../../../components/CourseMap';
 import type { CourseSuggestion } from '../../../../shared/types';
 
 interface CourseDetailPageProps {
@@ -186,6 +187,14 @@ export default function CourseDetailPage({ params, searchParams }: CourseDetailP
                     <div className="text-xl font-bold text-orange-600">{course.waypoints.length}</div>
                     <div className="text-xs text-gray-500">ポイント数</div>
                   </div>
+                </div>
+              </div>
+
+              {/* Interactive Map */}
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">ルートマップ</h3>
+                <div className="h-96 w-full rounded-lg overflow-hidden shadow-lg">
+                  <CourseMap waypoints={course.waypoints} className="h-full w-full" />
                 </div>
               </div>
 
