@@ -6,7 +6,7 @@ import {
   GeolocationPosition, 
   GeolocationError,
   getAccuracyLevel,
-  TOKYO_DEFAULT_LOCATION,
+  DEFAULT_LOCATION,
   markLocationPermissionAsked
 } from '../../lib/geolocation';
 
@@ -49,10 +49,10 @@ export default function CurrentLocationButton({
       const error = err as GeolocationError;
       setError(error);
       
-      // For certain errors, fall back to Tokyo
+      // For certain errors, fall back to default location
       if (error.type === 'PERMISSION_DENIED' || error.type === 'NOT_SUPPORTED') {
-        console.info('Using Tokyo as fallback location');
-        onLocationFound(TOKYO_DEFAULT_LOCATION);
+        console.info('Using default location as fallback');
+        onLocationFound(DEFAULT_LOCATION);
       }
       
       onLocationError?.(error);
@@ -159,7 +159,7 @@ export default function CurrentLocationButton({
             <div className="bg-red-50 border border-red-200 rounded p-2">
               <p className="text-red-800">
                 位置情報を取得できませんでした。<br />
-                東京駅周辺を表示しています。
+                デフォルト位置を表示しています。
               </p>
             </div>
           )}
@@ -167,7 +167,7 @@ export default function CurrentLocationButton({
             <div className="bg-gray-50 border border-gray-200 rounded p-2">
               <p className="text-gray-800">
                 このブラウザは位置情報に対応していません。<br />
-                東京駅周辺を表示しています。
+                デフォルト位置を表示しています。
               </p>
             </div>
           )}

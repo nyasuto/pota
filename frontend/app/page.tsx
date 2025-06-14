@@ -6,7 +6,7 @@ import { useSuggestions } from '../hooks/useCourses';
 import CurrentLocationButton from '../components/Location/CurrentLocationButton';
 import AddressSearch from '../components/Location/AddressSearch';
 import LocationPicker from '../components/Location/LocationPicker';
-import { GeolocationPosition, TOKYO_DEFAULT_LOCATION } from '../lib/geolocation';
+import { GeolocationPosition, DEFAULT_LOCATION } from '../lib/geolocation';
 import { GeocodingResult } from '../lib/geocoding';
 import type { CourseRequest, CourseSuggestion } from '../../shared/types';
 
@@ -15,7 +15,7 @@ export default function Home() {
   const { suggestions, isLoading, error, getSuggestions, clearError } = useSuggestions();
   const [courseType, setCourseType] = useState<'walking' | 'cycling' | 'jogging'>('walking');
   const [distance, setDistance] = useState<'short' | 'medium' | 'long'>('short');
-  const [selectedLocation, setSelectedLocation] = useState<GeolocationPosition>(TOKYO_DEFAULT_LOCATION);
+  const [selectedLocation, setSelectedLocation] = useState<GeolocationPosition>(DEFAULT_LOCATION);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [locationMethod, setLocationMethod] = useState<'current' | 'search' | 'map'>('current');
 
