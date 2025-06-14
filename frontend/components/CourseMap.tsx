@@ -56,14 +56,39 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const mapInstanceRef = useRef<any>(null);
+  const isInitializingRef = useRef(false);
 
   useEffect(() => {
-    if (!mapRef.current || waypoints.length === 0) {
+    // Capture ref value at the start of the effect
+    const containerElement = mapRef.current;
+    
+    if (!containerElement || waypoints.length === 0 || isInitializingRef.current) {
       return;
     }
 
     const initializeMap = async () => {
+      // Prevent multiple initialization attempts
+      if (isInitializingRef.current) {
+        return;
+      }
+      
+      isInitializingRef.current = true;
+
       try {
+        // Clean up any existing map instance first
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove();
+          mapInstanceRef.current = null;
+        }
+
+        // Clear the container completely
+        if (containerElement) {
+          containerElement.innerHTML = '';
+          // Remove any Leaflet-specific attributes or classes
+          (containerElement as any)._leaflet_id = undefined;
+          containerElement.removeAttribute('data-leaflet-id');
+        }
+
         // Dynamic import Leaflet only on client side
         const L = (await import('leaflet')).default;
 
@@ -83,13 +108,24 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
           lngs.reduce((sum, lng) => sum + lng, 0) / lngs.length
         ];
 
-        // Create map
-        const map = L.map(mapRef.current!).setView(center, 14);
+        // Create map with additional safeguards
+        if (!containerElement) {
+          throw new Error('Map container ref is null');
+        }
+
+        const map = L.map(containerElement, {
+          center: center,
+          zoom: 14,
+          zoomControl: false
+        });
 
         // Add tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
+        // Add zoom control
+        L.control.zoom({ position: 'topright' }).addTo(map);
 
         // Create custom icon function
         const createCustomIcon = (type: string, color: string) => {
@@ -126,6 +162,7 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
 
         // Add markers and create path
         const pathCoords: [number, number][] = [];
+        const markers: any[] = [];
 
         waypoints.forEach((waypoint, index) => {
           const coords: [number, number] = [waypoint.position.latitude, waypoint.position.longitude];
@@ -163,6 +200,8 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
               </div>
             </div>
           `);
+
+          markers.push(marker);
         });
 
         // Add route polyline
@@ -176,9 +215,7 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
 
         // Fit map to show all markers
         if (pathCoords.length > 0) {
-          const group = new L.FeatureGroup(waypoints.map(wp => 
-            L.marker([wp.position.latitude, wp.position.longitude])
-          ));
+          const group = new L.FeatureGroup(markers);
           map.fitBounds(group.getBounds().pad(0.1));
         }
 
@@ -187,16 +224,38 @@ function MapComponent({ waypoints, className = '' }: CourseMapProps) {
 
       } catch (error) {
         console.error('Failed to initialize map:', error);
+        setIsLoaded(false);
+      } finally {
+        isInitializingRef.current = false;
       }
     };
 
-    initializeMap();
+    // Add a small delay to ensure DOM is ready
+    const timeoutId = setTimeout(() => {
+      initializeMap();
+    }, 100);
 
     return () => {
+      clearTimeout(timeoutId);
+      isInitializingRef.current = false;
+      
       if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
+        try {
+          mapInstanceRef.current.remove();
+        } catch (error) {
+          console.warn('Error removing map:', error);
+        }
         mapInstanceRef.current = null;
       }
+
+      // Clean up the container using captured ref value
+      if (containerElement) {
+        containerElement.innerHTML = '';
+        (containerElement as any)._leaflet_id = undefined;
+        containerElement.removeAttribute('data-leaflet-id');
+      }
+      
+      setIsLoaded(false);
     };
   }, [waypoints]);
 
