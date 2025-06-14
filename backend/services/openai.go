@@ -258,7 +258,7 @@ func (s *OpenAIService) buildSuggestionPrompt(request CourseRequest) string {
 		}
 	}
 
-	prompt += `
+	prompt += fmt.Sprintf(`
 
 各コースには以下を含めてください:
 - 魅力的なタイトル（日本語）
