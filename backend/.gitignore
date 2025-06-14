@@ -18,7 +18,8 @@
 go.work
 
 # Environment variables
-.env
+.env.ci
+.env.local
 
 # Binary output
 potarin-backend
