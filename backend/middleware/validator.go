@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -161,25 +162,29 @@ func convertValidationError(fe validator.FieldError) utils.ErrorDetail {
 // registerCustomValidators registers custom validation rules
 func registerCustomValidators() {
 	// Register latitude validator
-	validate.RegisterValidation("latitude", func(fl validator.FieldLevel) bool {
+	if err := validate.RegisterValidation("latitude", func(fl validator.FieldLevel) bool {
 		lat, ok := fl.Field().Interface().(float64)
 		if !ok {
 			return false
 		}
 		return lat >= -90 && lat <= 90
-	})
+	}); err != nil {
+		panic(fmt.Sprintf("Failed to register latitude validator: %v", err))
+	}
 
 	// Register longitude validator
-	validate.RegisterValidation("longitude", func(fl validator.FieldLevel) bool {
+	if err := validate.RegisterValidation("longitude", func(fl validator.FieldLevel) bool {
 		lng, ok := fl.Field().Interface().(float64)
 		if !ok {
 			return false
 		}
 		return lng >= -180 && lng <= 180
-	})
+	}); err != nil {
+		panic(fmt.Sprintf("Failed to register longitude validator: %v", err))
+	}
 
 	// Register course type validator
-	validate.RegisterValidation("coursetype", func(fl validator.FieldLevel) bool {
+	if err := validate.RegisterValidation("coursetype", func(fl validator.FieldLevel) bool {
 		courseType, ok := fl.Field().Interface().(string)
 		if !ok {
 			return false
@@ -191,10 +196,12 @@ func registerCustomValidators() {
 			}
 		}
 		return false
-	})
+	}); err != nil {
+		panic(fmt.Sprintf("Failed to register coursetype validator: %v", err))
+	}
 
 	// Register distance validator
-	validate.RegisterValidation("distance", func(fl validator.FieldLevel) bool {
+	if err := validate.RegisterValidation("distance", func(fl validator.FieldLevel) bool {
 		distance, ok := fl.Field().Interface().(string)
 		if !ok {
 			return false
@@ -206,5 +213,7 @@ func registerCustomValidators() {
 			}
 		}
 		return false
-	})
+	}); err != nil {
+		panic(fmt.Sprintf("Failed to register distance validator: %v", err))
+	}
 }

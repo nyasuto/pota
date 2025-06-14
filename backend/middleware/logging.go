@@ -64,7 +64,7 @@ func (l *Logger) logMessage(level LogLevel, message string, fields map[string]in
 
 	// Format fields
 	fieldsStr := ""
-	if fields != nil && len(fields) > 0 {
+	if len(fields) > 0 {
 		fieldsStr = " | "
 		for key, value := range fields {
 			fieldsStr += fmt.Sprintf("%s=%v ", key, value)
@@ -179,11 +179,12 @@ func RequestLogger() fiber.Handler {
 			AppLogger.Error("Request completed with error", fields)
 		} else {
 			message := "Request completed"
-			if logLevel == WARN {
+			switch logLevel {
+			case WARN:
 				AppLogger.Warn(message, fields)
-			} else if logLevel == ERROR {
+			case ERROR:
 				AppLogger.Error(message, fields)
-			} else {
+			default:
 				AppLogger.Info(message, fields)
 			}
 		}

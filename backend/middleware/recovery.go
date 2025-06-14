@@ -29,7 +29,9 @@ func Recovery() fiber.Handler {
 				}
 
 				// Send error response
-				utils.SendError(c, err)
+				if sendErr := utils.SendError(c, err); sendErr != nil {
+					log.Printf("Failed to send error response: %v", sendErr)
+				}
 			}
 		}()
 
@@ -132,7 +134,9 @@ func RecoveryWithConfig(config RecoveryConfig) fiber.Handler {
 					}
 				}
 
-				utils.SendError(c, err)
+				if sendErr := utils.SendError(c, err); sendErr != nil {
+					log.Printf("Failed to send error response: %v", sendErr)
+				}
 			}
 		}()
 
