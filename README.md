@@ -44,44 +44,48 @@ ChatGPT (claude/Custom GPT)
 
 ## 機能一覧と実装順序
 
-### ステージ1：MVPフェーズ
+### ステージ1：MVPフェーズ ✅ 完了
 
-✅ プロジェクト初期化
-	•	frontend：bunx create-next-app + Tailwind + TypeScript構成
-	•	backend：go mod init potarin-backend + Fiber or Chi
+✅ **プロジェクト初期化**
+	•	frontend：Next.js 15 + TypeScript + Tailwind CSS + React 19
+	•	backend：Go + Fiber v2 web framework + OpenAI SDK
+	•	shared：Cross-platform type definitions (TypeScript/Go) + JSON Schema
 
-✅ API設計 (Go)
-	•	/api/v1/suggestions  (AI提案エンドポイント)
-	•	入力: ユーザーリクエスト (天候・希望コースタイプ等)
-	•	出力: JSONスキーマに準拠したAI提案コース群
-	•	/api/v1/details (コース詳細エンドポイント)
-	•	入力: 選択されたコース概要
-	•	出力: コース詳細 (waypoints + 位置情報含む)
+✅ **API実装完了**
+	•	`/api/v1/suggestions` - AI powered course suggestions
+		- 入力: ユーザーリクエスト (コースタイプ・距離・位置・嗜好等)
+		- 出力: 東京エリア特化の3つの提案コース
+	•	`/api/v1/details` - Detailed course information
+		- 入力: 選択されたコース概要
+		- 出力: 詳細なwaypoints + 座標情報
+	•	`/api/v1/health` - Health check endpoint
 
-✅ AIプロンプト設計 (claude駆動)
-	•	Goサーバー内でプロンプト＋JSONスキーマによるresponse_format利用
-	•	型安全なOpenAI応答処理（Goでは非常に強力）
+✅ **OpenAI GPT-4 統合**
+	•	JSON Schema strict mode による構造化レスポンス
+	•	東京特化のプロンプト設計と日本語対応
+	•	型安全なOpenAI応答処理とエラーハンドリング
+	•	環境設定: .env.local → .env フォールバック対応
 
-✅ フロント実装
-	•	ヘッダー / カード型コース提案表示
-	•	コース選択→詳細画面遷移
-	•	地図表示 (MapClient SSR排除)
-	•	Mapに出発地点のみマーカー描画
+✅ **型安全性とアーキテクチャ**
+	•	共有型定義でフロントエンド・バックエンド間の型安全性確保
+	•	Services → Handlers → Routes の清潔なアーキテクチャ
+	•	包括的なバリデーションとエラーハンドリング
 
 ⸻
 
-### ステージ2：AI詳細化・ルート描画フェーズ
+### ステージ2：フロントエンド統合フェーズ 🚧 次のステップ
 
-✅ 詳細APIの拡張
--	AIからsummary + routes[{title, description, position}]を受信
+⏳ **フロントエンド実装**
+	•	API統合とUIコンポーネント実装
+	•	コース提案表示（カード形式）
+	•	コース詳細画面の実装
+	•	エラーハンドリングとローディング状態
 
-✅ 地図描画
--	複数マーカー描画
--	Polyline描画によるルート可視化
-
-✅ エージェントAPIの段階的投入
-	-	OpenAI Functions API利用可能なら、Go側でエージェントスキーマ登録
-	-	claudeによるAPIスキーマ検証補助
+⏳ **地図描画機能**
+	•	React-Leaflet統合
+	•	複数マーカー描画（waypoints表示）
+	•	Polyline描画によるルート可視化
+	•	インタラクティブマップ機能
 
 ### ステージ3：拡張フェーズ
 
