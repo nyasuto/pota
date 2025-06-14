@@ -19,7 +19,7 @@ export const GEOLOCATION_ERRORS = {
   TIMEOUT: 3,
 } as const;
 
-export const TOKYO_DEFAULT_LOCATION: GeolocationPosition = {
+export const DEFAULT_LOCATION: GeolocationPosition = {
   latitude: 35.3906,
   longitude: 139.4836,
   accuracy: 1000,
