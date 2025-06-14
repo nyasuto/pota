@@ -19,6 +19,35 @@ export interface Position {
   longitude: number;
 }
 
+// Extended location types for geolocation services
+export interface LocationWithAccuracy extends Position {
+  accuracy: number;
+  timestamp: number;
+}
+
+export interface LocationInfo {
+  position: Position;
+  address?: {
+    displayName?: string;
+    city?: string;
+    prefecture?: string;
+    country?: string;
+    postcode?: string;
+  };
+  source: 'gps' | 'geocoding' | 'manual';
+}
+
+export interface LocationPreferences {
+  useCurrentLocation: boolean;
+  savedLocations: Array<{
+    id: string;
+    name: string;
+    position: Position;
+    address?: string;
+  }>;
+  defaultLocation?: Position;
+}
+
 export interface Waypoint {
   id: string;
   title: string;
