@@ -14,9 +14,15 @@ type Config struct {
 }
 
 func Load() *Config {
-	// Load .env file if it exists (development)
-	if err := godotenv.Load(); err != nil {
-		log.Printf("No .env file found: %v", err)
+	// Try to load .env.local first, then .env as fallback
+	if err := godotenv.Load(".env.local"); err != nil {
+		if err := godotenv.Load(".env"); err != nil {
+			log.Printf("No .env.local or .env file found: %v", err)
+		} else {
+			log.Printf("Loaded .env file")
+		}
+	} else {
+		log.Printf("Loaded .env.local file")
 	}
 
 	config := &Config{

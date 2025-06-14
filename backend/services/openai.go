@@ -193,12 +193,14 @@ func (s *OpenAIService) buildDetailsPrompt(suggestion CourseSuggestion) string {
 
 func (s *OpenAIService) getCourseSuggestionsSchema() jsonschema.Definition {
 	return jsonschema.Definition{
-		Type: jsonschema.Object,
+		Type:                 jsonschema.Object,
+		AdditionalProperties: false,
 		Properties: map[string]jsonschema.Definition{
 			"suggestions": {
 				Type: jsonschema.Array,
 				Items: &jsonschema.Definition{
-					Type: jsonschema.Object,
+					Type:                 jsonschema.Object,
+					AdditionalProperties: false,
 					Properties: map[string]jsonschema.Definition{
 						"id": {
 							Type: jsonschema.String,
@@ -224,7 +226,8 @@ func (s *OpenAIService) getCourseSuggestionsSchema() jsonschema.Definition {
 							Enum: []string{"walking", "cycling", "jogging"},
 						},
 						"startPoint": {
-							Type: jsonschema.Object,
+							Type:                 jsonschema.Object,
+							AdditionalProperties: false,
 							Properties: map[string]jsonschema.Definition{
 								"latitude": {
 									Type: jsonschema.Number,
@@ -255,10 +258,12 @@ func (s *OpenAIService) getCourseSuggestionsSchema() jsonschema.Definition {
 
 func (s *OpenAIService) getCourseDetailsSchema() jsonschema.Definition {
 	return jsonschema.Definition{
-		Type: jsonschema.Object,
+		Type:                 jsonschema.Object,
+		AdditionalProperties: false,
 		Properties: map[string]jsonschema.Definition{
 			"course": {
-				Type: jsonschema.Object,
+				Type:                 jsonschema.Object,
+				AdditionalProperties: false,
 				Properties: map[string]jsonschema.Definition{
 					"id": {
 						Type: jsonschema.String,
@@ -286,7 +291,8 @@ func (s *OpenAIService) getCourseDetailsSchema() jsonschema.Definition {
 					"waypoints": {
 						Type: jsonschema.Array,
 						Items: &jsonschema.Definition{
-							Type: jsonschema.Object,
+							Type:                 jsonschema.Object,
+							AdditionalProperties: false,
 							Properties: map[string]jsonschema.Definition{
 								"id": {
 									Type: jsonschema.String,
@@ -298,7 +304,8 @@ func (s *OpenAIService) getCourseDetailsSchema() jsonschema.Definition {
 									Type: jsonschema.String,
 								},
 								"position": {
-									Type: jsonschema.Object,
+									Type:                 jsonschema.Object,
+									AdditionalProperties: false,
 									Properties: map[string]jsonschema.Definition{
 										"latitude": {
 											Type: jsonschema.Number,
