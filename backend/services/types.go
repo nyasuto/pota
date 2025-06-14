@@ -4,9 +4,9 @@ import "time"
 
 // Request types for OpenAI service
 type CourseRequest struct {
-	CourseType  string            `json:"courseType"`
-	Distance    string            `json:"distance"`
-	Location    *Position         `json:"location,omitempty"`
+	CourseType  string             `json:"courseType"`
+	Distance    string             `json:"distance"`
+	Location    *Position          `json:"location,omitempty"`
 	Preferences *CoursePreferences `json:"preferences,omitempty"`
 }
 

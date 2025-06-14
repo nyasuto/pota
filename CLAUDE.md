@@ -65,6 +65,7 @@ When user says "commit" or requests a commit:
    - Switch to the new branch
    - Then perform the commit
 3. **If on feature branch**: Proceed with commit normally
+4. **For Go code changes**: ALWAYS run `go fmt ./...` before commit
 
 ### Branch Naming Convention
 
@@ -84,6 +85,9 @@ git status
 
 # If on main, create feature branch
 git checkout -b feat/new-feature
+
+# Format Go code before commit
+go fmt ./...
 
 # Make changes and commit
 git add .
@@ -338,6 +342,7 @@ Before any commit operation, Claude Code must:
 
 ✅ Check current branch: `git status`  
 ✅ If on main: Create feature branch first  
+✅ Format Go code: `go fmt ./...`  
 ✅ Use descriptive branch names with prefixes  
 ✅ Never commit directly to main  
 ✅ Always use Pull Requests for main branch changes
