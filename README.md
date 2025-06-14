@@ -6,41 +6,81 @@
 このバージョンでは、AIエージェント（claude等）を積極活用しながら、バックエンドをGo言語で完全再設計します。
 
 ## 利用技術スタック
-採用技術
+
 ### フロントエンド
-Next.js 14 (App Router, TypeScript, React 18)
-bun
+- **Next.js 15** (App Router, TypeScript, React 19)
+- **Tailwind CSS v4** (PostCSS統合)
+- **Bun** (パッケージマネージャー・ランタイム)
+- **型安全API通信** (lib/api.ts + React hooks)
 
 ### バックエンド
-Golang
+- **Go 1.21+** + **Fiber v2** web framework
+- **OpenAI SDK** (sashabaranov/go-openai v1.40.1)
+- **JSON Schema strict mode** (構造化AI応答)
+- **環境設定** (.env.local → .env フォールバック)
 
 ### AI連携
-OpenAI GPT-4o / GPT-4o-mini API
+- **OpenAI GPT-4o** API (日本語専用レスポンス)
+- **JSON Schema validation** (additionalProperties: false)
+- **東京特化プロンプト** 設計
 
-### 地図描画
-React-Leaflet + Leaflet
-### スタイリング
-Tailwind CSS
-### ビルド・開発
-Bun (フロント用) / Go modules
-### デプロイ
-Vercel (フロント), Fly.io or Railway (Goバックエンド)
-### 状態管理
-React Context or Zustand
-### API通信
-REST + JSON
-### CI/CD
-GitHub Actions
-### AI開発支援
-ChatGPT (claude/Custom GPT)
+### 共有・型安全性
+- **Cross-platform types** (TypeScript ↔ Go)
+- **共有型定義** (frontend/backend間)
+- **API constants** 管理
+
+### 開発・品質
+- **GitHub Actions** CI/CD
+- **Dependabot** 自動依存関係更新
+- **ESLint + TypeScript** 厳密な型チェック
+- **Claude Code** AI開発支援
+
+### デプロイ (予定)
+- **Vercel** (フロントエンド)
+- **Railway/Fly.io** (Goバックエンド)
 
 ## ディレクトリ構成
 
-- /frontend  (Next.js, TypeScript, React)
-- /backend   (Go, Fiber or Chi)
-- /shared    (APIスキーマ定義, JSON Schema)
+```
+/
+├── frontend/          # Next.js 15 + TypeScript + Tailwind CSS
+│   ├── app/          # App Router (pages + layouts)
+│   │   ├── page.tsx          # ホームページ (コース検索)
+│   │   └── course/[id]/      # 動的ルート (コース詳細)
+│   ├── hooks/        # React hooks (API統合)
+│   ├── lib/          # API client + utilities
+│   └── package.json  # Frontend dependencies
+├── backend/          # Go + Fiber API server
+│   ├── main.go              # アプリケーションエントリーポイント
+│   ├── config/config.go     # 環境設定管理
+│   ├── handlers/course.go   # HTTP request handlers
+│   ├── services/openai.go   # OpenAI API統合
+│   └── go.mod               # Go dependencies
+└── shared/          # Cross-platform型定義
+    ├── types.ts     # TypeScript definitions
+    ├── types.go     # Go struct definitions
+    ├── schemas.json # JSON Schema for AI
+    └── api-constants.ts # API endpoints
+```
 
-`/frontend`, `/backend`, `/shared` ディレクトリを作成し、最小構成のアプリケーションを配置しています。
+## 🚀 現在の実装状況
+
+### 完成した機能
+- ✅ **コース提案機能**: ユーザーの希望に応じたAI提案
+- ✅ **詳細ルート表示**: Waypoint付きの詳細コース情報
+- ✅ **日本語対応**: 全てのAI応答が日本語
+- ✅ **リアルタイム検索**: インタラクティブなUI/UX
+- ✅ **型安全通信**: フロントエンド・バックエンド間
+- ✅ **レスポンシブデザイン**: デスクトップ・モバイル対応
+
+### 利用可能なAPI
+- `GET /api/v1/health` - ヘルスチェック
+- `POST /api/v1/suggestions` - AIコース提案 (東京エリア特化)
+- `POST /api/v1/details` - 詳細ルート情報 (waypoints付き)
+
+### デモ環境
+- **Frontend**: http://localhost:3001 (Next.js dev server)
+- **Backend**: http://localhost:8080 (Go Fiber server)
 
 ## 機能一覧と実装順序
 
@@ -73,13 +113,29 @@ ChatGPT (claude/Custom GPT)
 
 ⸻
 
-### ステージ2：フロントエンド統合フェーズ 🚧 次のステップ
+### ステージ2：フロントエンド統合フェーズ ✅ 完了
 
-⏳ **フロントエンド実装**
-	•	API統合とUIコンポーネント実装
-	•	コース提案表示（カード形式）
-	•	コース詳細画面の実装
-	•	エラーハンドリングとローディング状態
+✅ **フロントエンド API統合**
+	•	型安全なAPIクライアント (lib/api.ts) 実装済み
+	•	React hooks (hooks/useCourses.ts) でAPI統合
+	•	包括的なエラーハンドリングとローディング状態
+	•	環境変数による設定管理
+
+✅ **ユーザーインターフェース**
+	•	インタラクティブなコース検索フォーム
+	•	リアルタイムAI提案表示（カード形式）
+	•	レスポンシブデザインと視覚的フィードバック
+	•	日本語専用AIレスポンス保証
+
+✅ **コース詳細ページ**
+	•	動的ルーティング (/course/[id]) 実装
+	•	詳細なwaypoint情報表示
+	•	タイプ別色分け表示（スタート/チェックポイント/ランドマーク/ゴール）
+	•	座標情報と詳細説明表示
+
+⸻
+
+### ステージ3：地図機能フェーズ 🚧 次のステップ
 
 ⏳ **地図描画機能**
 	•	React-Leaflet統合
@@ -87,12 +143,19 @@ ChatGPT (claude/Custom GPT)
 	•	Polyline描画によるルート可視化
 	•	インタラクティブマップ機能
 
-### ステージ3：拡張フェーズ
+### ステージ4：拡張フェーズ
 
--	運動量・距離制御オプション追加
--	ユーザー現在地(GPS)サポート
--	天候API連携
--	履歴保存・再利用機能（SQLite, PostgreSQL）
+⏳ **機能拡張**
+	•	ユーザー現在地(GPS)サポート
+	•	お気に入り・履歴保存機能
+	•	天候API連携
+	•	より詳細な嗜好設定オプション
+
+⏳ **品質・パフォーマンス向上**
+	•	テスト実装 (Frontend/Backend)
+	•	API結果キャッシュ機能
+	•	パフォーマンス最適化
+	•	セキュリティ強化
 
 ### 設計・実装の注意点
 
