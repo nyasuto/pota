@@ -1,32 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, ZoomControl } from 'react-leaflet';
-import { Icon, LatLngTuple } from 'leaflet';
+import { useEffect, useState, useRef } from 'react';
 import { Waypoint } from '../../shared/types';
 
 interface CourseMapProps {
   waypoints: Waypoint[];
   className?: string;
 }
-
-// Custom marker icons
-const createCustomIcon = (type: string, color: string) => {
-  return new Icon({
-    iconUrl: `data:image/svg+xml;base64,${btoa(`
-      <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12.5 0C5.6 0 0 5.6 0 12.5C0 19.4 12.5 41 12.5 41S25 19.4 25 12.5C25 5.6 19.4 0 12.5 0Z" fill="${color}"/>
-        <circle cx="12.5" cy="12.5" r="7" fill="white"/>
-        <text x="12.5" y="17" text-anchor="middle" font-size="10" font-weight="bold" fill="${color}">
-          ${type === 'start' ? 'S' : type === 'end' ? 'E' : type === 'checkpoint' ? 'C' : 'L'}
-        </text>
-      </svg>
-    `)}`,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-  });
-};
 
 const getMarkerColor = (type: string): string => {
   switch (type) {
@@ -59,97 +39,187 @@ const getTypeLabel = (type: string): string => {
 };
 
 export default function CourseMap({ waypoints, className = '' }: CourseMapProps) {
-  const [isClient, setIsClient] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [mapInstance, setMapInstance] = useState<any>(null);
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    if (typeof window === 'undefined' || !mapRef.current || waypoints.length === 0) {
+      return;
+    }
 
-  if (!isClient || waypoints.length === 0) {
+    const initializeMap = async () => {
+      try {
+        // Dynamic imports to avoid SSR issues
+        const L = (await import('leaflet')).default;
+
+        // Fix Leaflet default marker icons
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+        });
+
+        // Calculate center
+        const lats = waypoints.map(w => w.position.latitude);
+        const lngs = waypoints.map(w => w.position.longitude);
+        const center: [number, number] = [
+          lats.reduce((sum, lat) => sum + lat, 0) / lats.length,
+          lngs.reduce((sum, lng) => sum + lng, 0) / lngs.length
+        ];
+
+        // Create map
+        const map = L.map(mapRef.current!).setView(center, 14);
+
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Create custom icon function
+        const createCustomIcon = (type: string, color: string) => {
+          return L.divIcon({
+            html: `
+              <div style="
+                background-color: ${color};
+                width: 25px;
+                height: 25px;
+                border-radius: 50% 50% 50% 0;
+                border: 3px solid white;
+                transform: rotate(-45deg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+              ">
+                <span style="
+                  color: white;
+                  font-weight: bold;
+                  font-size: 12px;
+                  transform: rotate(45deg);
+                ">
+                  ${type === 'start' ? 'S' : type === 'end' ? 'E' : type === 'checkpoint' ? 'C' : 'L'}
+                </span>
+              </div>
+            `,
+            className: 'custom-marker',
+            iconSize: [25, 25],
+            iconAnchor: [12, 24],
+            popupAnchor: [0, -24]
+          });
+        };
+
+        // Add markers and create path
+        const pathCoords: [number, number][] = [];
+
+        waypoints.forEach((waypoint, index) => {
+          const coords: [number, number] = [waypoint.position.latitude, waypoint.position.longitude];
+          pathCoords.push(coords);
+
+          const marker = L.marker(coords, {
+            icon: createCustomIcon(waypoint.type, getMarkerColor(waypoint.type))
+          }).addTo(map);
+
+          marker.bindPopup(`
+            <div style="min-width: 200px;">
+              <div style="margin-bottom: 8px;">
+                <span style="
+                  background-color: #dbeafe;
+                  color: #1e40af;
+                  padding: 4px 8px;
+                  border-radius: 9999px;
+                  font-size: 12px;
+                  font-weight: 600;
+                ">
+                  ${getTypeLabel(waypoint.type)}
+                </span>
+                <span style="color: #6b7280; font-size: 12px; margin-left: 8px;">
+                  #${index + 1}
+                </span>
+              </div>
+              <h3 style="font-weight: 600; font-size: 18px; margin-bottom: 4px;">
+                ${waypoint.title}
+              </h3>
+              <p style="color: #4b5563; font-size: 14px; margin-bottom: 8px;">
+                ${waypoint.description}
+              </p>
+              <div style="color: #6b7280; font-size: 12px;">
+                座標: ${waypoint.position.latitude.toFixed(6)}, ${waypoint.position.longitude.toFixed(6)}
+              </div>
+            </div>
+          `);
+        });
+
+        // Add route polyline
+        if (pathCoords.length > 1) {
+          L.polyline(pathCoords, {
+            color: '#3b82f6',
+            weight: 4,
+            opacity: 0.7
+          }).addTo(map);
+        }
+
+        // Fit map to show all markers
+        if (pathCoords.length > 0) {
+          const group = new L.FeatureGroup(waypoints.map(wp => 
+            L.marker([wp.position.latitude, wp.position.longitude])
+          ));
+          map.fitBounds(group.getBounds().pad(0.1));
+        }
+
+        setMapInstance(map);
+        setIsLoaded(true);
+
+        return map;
+      } catch (error) {
+        console.error('Failed to initialize map:', error);
+      }
+    };
+
+    initializeMap();
+
+    return () => {
+      if (mapInstance) {
+        mapInstance.remove();
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [waypoints]);
+
+  if (waypoints.length === 0) {
     return (
       <div className={`bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
-        <p className="text-gray-600">地図を読み込み中...</p>
+        <p className="text-gray-600">地図データがありません</p>
       </div>
     );
   }
 
-  // Calculate map center and bounds
-  const positions: LatLngTuple[] = waypoints.map(wp => [wp.position.latitude, wp.position.longitude]);
-  const center: LatLngTuple = [
-    positions.reduce((sum, pos) => sum + pos[0], 0) / positions.length,
-    positions.reduce((sum, pos) => sum + pos[1], 0) / positions.length,
-  ];
-
-  const handleFitToBounds = () => {
-    // This would be implemented with a ref to the map instance
-    // For now, we'll add the UI elements
-  };
-
   return (
     <div className={`relative ${className}`}>
+      {/* Loading overlay */}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center z-10">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mb-2"></div>
+            <p className="text-gray-600 text-sm">地図を読み込み中...</p>
+          </div>
+        </div>
+      )}
+
       {/* Map Controls Overlay */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
-        <button
-          onClick={handleFitToBounds}
-          className="bg-white hover:bg-gray-50 border border-gray-300 rounded px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors"
-          title="ルート全体を表示"
-        >
-          🗺️ 全体表示
-        </button>
         <div className="bg-white border border-gray-300 rounded px-3 py-2 text-xs text-gray-600 shadow-sm">
           ポイント数: {waypoints.length}
         </div>
       </div>
 
-      <MapContainer
-        center={center}
-        zoom={14}
-        style={{ height: '100%', width: '100%' }}
-        className="rounded-lg z-0"
-        zoomControl={false}
-        scrollWheelZoom={true}
-        doubleClickZoom={true}
-        dragging={true}
-      >
-        <ZoomControl position="topright" />
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        
-        {/* Route line */}
-        <Polyline
-          positions={positions}
-          color="#3b82f6"
-          weight={4}
-          opacity={0.7}
-        />
-        
-        {/* Waypoint markers */}
-        {waypoints.map((waypoint, index) => (
-          <Marker
-            key={waypoint.id}
-            position={[waypoint.position.latitude, waypoint.position.longitude]}
-            icon={createCustomIcon(waypoint.type, getMarkerColor(waypoint.type))}
-          >
-            <Popup>
-              <div className="min-w-[200px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                    {getTypeLabel(waypoint.type)}
-                  </span>
-                  <span className="text-xs text-gray-500">#{index + 1}</span>
-                </div>
-                <h3 className="font-semibold text-lg mb-1">{waypoint.title}</h3>
-                <p className="text-sm text-gray-600">{waypoint.description}</p>
-                <div className="mt-2 text-xs text-gray-500">
-                  座標: {waypoint.position.latitude.toFixed(6)}, {waypoint.position.longitude.toFixed(6)}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+      {/* Map container */}
+      <div 
+        ref={mapRef} 
+        className="w-full h-full rounded-lg"
+        style={{ minHeight: '300px' }}
+      />
     </div>
   );
 }
