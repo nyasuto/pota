@@ -31,7 +31,7 @@ func setupRoutes(app *fiber.App) {
 	// Health check
 	api.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
-			"status": "ok",
+			"status":  "ok",
 			"message": "Potarin Backend API is running",
 		})
 	})
