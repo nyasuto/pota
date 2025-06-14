@@ -1,12 +1,26 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { Waypoint } from '../../shared/types';
 
 interface CourseMapProps {
   waypoints: Waypoint[];
   className?: string;
 }
+
+// Create a dynamic component that only renders on client
+const DynamicMap = dynamic(() => Promise.resolve(MapComponent), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-gray-100 rounded-lg flex items-center justify-center h-full">
+      <div className="text-center">
+        <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mb-2"></div>
+        <p className="text-gray-600 text-sm">地図を読み込み中...</p>
+      </div>
+    </div>
+  )
+});
 
 const getMarkerColor = (type: string): string => {
   switch (type) {
@@ -38,19 +52,19 @@ const getTypeLabel = (type: string): string => {
   }
 };
 
-export default function CourseMap({ waypoints, className = '' }: CourseMapProps) {
+function MapComponent({ waypoints, className = '' }: CourseMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [mapInstance, setMapInstance] = useState<any>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !mapRef.current || waypoints.length === 0) {
+    if (!mapRef.current || waypoints.length === 0) {
       return;
     }
 
     const initializeMap = async () => {
       try {
-        // Dynamic imports to avoid SSR issues
+        // Dynamic import Leaflet only on client side
         const L = (await import('leaflet')).default;
 
         // Fix Leaflet default marker icons
@@ -168,10 +182,9 @@ export default function CourseMap({ waypoints, className = '' }: CourseMapProps)
           map.fitBounds(group.getBounds().pad(0.1));
         }
 
-        setMapInstance(map);
+        mapInstanceRef.current = map;
         setIsLoaded(true);
 
-        return map;
       } catch (error) {
         console.error('Failed to initialize map:', error);
       }
@@ -180,11 +193,11 @@ export default function CourseMap({ waypoints, className = '' }: CourseMapProps)
     initializeMap();
 
     return () => {
-      if (mapInstance) {
-        mapInstance.remove();
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waypoints]);
 
   if (waypoints.length === 0) {
@@ -222,4 +235,8 @@ export default function CourseMap({ waypoints, className = '' }: CourseMapProps)
       />
     </div>
   );
+}
+
+export default function CourseMap({ waypoints, className = '' }: CourseMapProps) {
+  return <DynamicMap waypoints={waypoints} className={className} />;
 }
