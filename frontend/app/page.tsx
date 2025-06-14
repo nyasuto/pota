@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSuggestions } from '../hooks/useCourses';
-import type { CourseRequest } from '../../shared/types';
+import type { CourseRequest, CourseSuggestion } from '../../shared/types';
 
 export default function Home() {
+  const router = useRouter();
   const { suggestions, isLoading, error, getSuggestions, clearError } = useSuggestions();
   const [courseType, setCourseType] = useState<'walking' | 'cycling' | 'jogging'>('walking');
   const [distance, setDistance] = useState<'short' | 'medium' | 'long'>('short');
@@ -26,6 +28,12 @@ export default function Home() {
     };
 
     await getSuggestions(request);
+  };
+
+  const handleViewDetails = (suggestion: CourseSuggestion) => {
+    // Navigate to course detail page with suggestion data
+    const suggestionParam = encodeURIComponent(JSON.stringify(suggestion));
+    router.push(`/course/${suggestion.id}?suggestion=${suggestionParam}`);
   };
 
   return (
@@ -135,6 +143,14 @@ export default function Home() {
                           </span>
                         ))}
                       </div>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-gray-200">
+                      <button
+                        onClick={() => handleViewDetails(suggestion)}
+                        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors font-semibold"
+                      >
+                        詳細を見る
+                      </button>
                     </div>
                   </div>
                 ))}
