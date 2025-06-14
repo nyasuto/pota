@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "validate-schemas": "ajv validate -s schemas.json -d \"test-data/*.json\"",
-    "type-check": "tsc --noEmit types.ts"
+    "type-check": "tsc --noEmit types.ts",
+    "install-deps": "bun install"
   },
   "keywords": [
     "typescript",
