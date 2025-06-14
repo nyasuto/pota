@@ -19,30 +19,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ポタりん V2 is an AI-powered walking and cycling route suggestion application. The system uses AI agents to propose optimal routes based on user preferences, weather conditions, and location data, with interactive map visualization.
 
-**Current Status**: Core infrastructure complete - Ready for API implementation phase
+**Current Status**: Full-stack application with AI integration - Ready for map visualization phase
 
-## 🎯 Project Progress (Updated: 2025-01-14)
+## 🎯 Project Progress (Updated: 2025-06-14)
 
 ### ✅ Completed (Phase 1: Foundation)
-- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS + React 19
-- **Backend**: Go + Fiber v2 web framework  
+- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS v4 + React 19
+- **Backend**: Go + Fiber v2 web framework + OpenAI SDK
 - **Shared Types**: Cross-platform type definitions (TS/Go) + JSON Schema
 - **CI/CD**: GitHub Actions (frontend/backend/security testing)
 - **Dependencies**: Dependabot with auto-merge configuration
-- **OpenAI Integration**: GPT-4 service with JSON Schema structured responses
+- **OpenAI Integration**: GPT-4o with JSON Schema strict mode
 - **Architecture**: Clean layered architecture with type safety
 
-### 🚧 Current Phase: API Implementation
-- OpenAI GPT-4 integration with structured prompts ✅
-- Environment configuration and validation ✅  
-- Service layer architecture ✅
-- Ready to implement API endpoints
+### ✅ Completed (Phase 2: API Implementation) 
+- **API Endpoints**: `/suggestions`, `/details`, `/health` fully implemented
+- **Japanese-only responses**: Enforced through system messages and prompts
+- **Error handling**: Comprehensive validation and user feedback
+- **Environment config**: .env.local → .env fallback system
 
-### 📋 Next Steps (Phase 2: Core Features)
-1. **API Endpoints**: Implement suggestions and details endpoints
-2. **Frontend Integration**: Connect UI to backend APIs
-3. **Error Handling**: Comprehensive error states and validation
-4. **Map Integration**: React-Leaflet for route visualization
+### ✅ Completed (Phase 3: Frontend Integration)
+- **Type-safe API client**: lib/api.ts with comprehensive error handling
+- **React hooks**: hooks/useCourses.ts for API integration
+- **Interactive UI**: Real-time course search and suggestions display
+- **Course detail pages**: Dynamic routing with waypoint visualization
+- **Responsive design**: Desktop and mobile optimized
+
+### 🚧 Current Phase: Map Visualization
+- **Next Priority**: React-Leaflet integration
+- **Ready for**: Interactive map with waypoint markers and route lines
+- **Architecture**: Frontend and backend fully functional
+
+### 📋 Next Steps (Phase 4: Map Features)
+1. **React-Leaflet Integration**: Interactive map component
+2. **Waypoint Markers**: Visual route points with popups  
+3. **Route Visualization**: Polyline drawing between waypoints
+4. **Interactive Features**: Click events and map controls
 
 ## ⚠️ CRITICAL: Branch Protection Rules
 
@@ -230,18 +242,21 @@ NEXT_PUBLIC_API_URL=http://localhost:8080
 
 ### Development Workflow  
 1. Define types in `/shared` first ✅
-2. Implement backend endpoints with validation 🚧 (In Progress)
-3. Create frontend components with type safety ⏳
-4. **Verify frontend builds**: Run `bun run build` to ensure frontend compiles
-5. Test integration between all layers ⏳
+2. Implement backend endpoints with validation ✅
+3. Create frontend components with type safety ✅
+4. **Verify frontend builds**: Run `bun run build` to ensure frontend compiles ✅
+5. Test integration between all layers ✅
+6. **Next**: Implement map visualization with React-Leaflet 🚧
 
 ### Current Technical Achievements
-- **OpenAI SDK**: Integrated sashabaranov/go-openai v1.40.1
-- **JSON Schema**: Strict mode for structured AI responses
-- **Environment**: Secure API key management with validation
-- **Prompts**: Optimized for Japanese route planning
-- **Architecture**: Services → Handlers → Routes pattern
-- **Module System**: Local shared types module integration
+- **Full-stack Integration**: Complete frontend-backend communication
+- **OpenAI GPT-4o**: Japanese-only responses with strict JSON Schema
+- **Type Safety**: Cross-platform types (TypeScript ↔ Go)
+- **API Client**: Comprehensive error handling and loading states
+- **Dynamic Routing**: Next.js 15 App Router with course detail pages
+- **Responsive UI**: Mobile-optimized design with Tailwind CSS v4
+- **Environment Config**: .env.local → .env fallback system
+- **Real-time Features**: Interactive course search and AI suggestions
 
 ## Dependencies
 
