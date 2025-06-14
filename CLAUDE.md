@@ -17,9 +17,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TBD
+ポタりん V2 is an AI-powered walking and cycling route suggestion application. The system uses AI agents to propose optimal routes based on user preferences, weather conditions, and location data, with interactive map visualization.
 
-**Current Status**: early state
+**Current Status**: Foundation complete - Frontend, Backend, and Shared types implemented
 
 ## ⚠️ CRITICAL: Branch Protection Rules
 
@@ -75,52 +75,218 @@ gh pr create
 
 ## Technology Stack
 
-TBD
+### Frontend
+- **Next.js 14** with App Router
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **React 18** with modern hooks
+- **Bun** as package manager
+- **React-Leaflet** for map visualization (planned)
+
+### Backend
+- **Go 1.21+** with Fiber v2 framework
+- **OpenAI GPT-4** API integration (planned)
+- **JSON Schema** validation for AI responses
+- **CORS** enabled for frontend communication
+
+### Shared
+- **TypeScript types** for frontend
+- **Go structs** with validation tags
+- **JSON Schema** definitions for AI integration
+- **API constants** and endpoint definitions
+
+### Development Tools
+- **Git** with feature branch workflow
+- **GitHub** for repository management
+- **Bun** for frontend package management
+- **Go modules** for backend dependencies
 
 ## Development Setup
 
-TBD
+### Prerequisites
+- **Go 1.21+** for backend development
+- **Bun** for frontend package management
+- **Git** for version control
+
+### Quick Start
+
+1. **Backend Setup**:
+   ```bash
+   cd backend
+   go mod tidy
+   go run main.go  # Starts on :8080
+   ```
+
+2. **Frontend Setup**:
+   ```bash
+   cd frontend
+   bun install
+   bun dev  # Starts on :3000
+   ```
+
+3. **Shared Types**:
+   ```bash
+   cd shared
+   go mod tidy  # For Go validation
+   ```
 
 ### Environment Configuration
 
-TBD
+#### Backend (.env)
+```
+OPENAI_API_KEY=your_api_key_here
+PORT=8080
+```
+
+#### Frontend (.env.local)
+```
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
 
 ## Architecture
 
-TBD
+### Directory Structure
+```
+/
+├── frontend/          # Next.js 14 + TypeScript frontend
+│   ├── app/          # App Router pages and components
+│   ├── components/   # Reusable React components (planned)
+│   └── package.json  # Frontend dependencies
+├── backend/          # Go + Fiber API server
+│   ├── main.go      # Main application entry point
+│   └── go.mod       # Go dependencies
+└── shared/          # Shared types and schemas
+    ├── types.ts     # TypeScript definitions
+    ├── types.go     # Go struct definitions
+    ├── schemas.json # JSON Schema for AI
+    └── api-constants.ts # API endpoints and constants
+```
 
 ### Key Components
 
-TBD
+#### Frontend (Next.js)
+- **App Router**: Modern Next.js routing with layouts
+- **TypeScript**: Full type safety with shared types
+- **Tailwind CSS**: Utility-first styling
+- **API Integration**: Type-safe backend communication
+
+#### Backend (Go + Fiber)
+- **REST API**: JSON-based endpoints for course suggestions
+- **Type Safety**: Struct validation with tags
+- **AI Integration**: OpenAI GPT-4 with JSON Schema (planned)
+- **CORS**: Cross-origin support for frontend
+
+#### Shared Types
+- **Cross-platform**: Same data structures for Go and TypeScript
+- **Validation**: Go struct tags for request validation
+- **AI Schema**: JSON Schema for OpenAI response formatting
 
 ## Key Implementation Notes
 
-TBD
+### API Endpoints
+- **GET /api/v1/health**: Health check endpoint
+- **POST /api/v1/suggestions**: Get AI-powered course suggestions
+- **POST /api/v1/details**: Get detailed course information with waypoints
+
+### Type Safety Strategy
+1. **Shared Types**: Same data structures across frontend/backend
+2. **Go Validation**: Struct tags validate incoming requests
+3. **TypeScript**: Compile-time type checking for frontend
+4. **JSON Schema**: Runtime validation and AI response formatting
+
+### AI Integration Pattern
+- Use JSON Schema to constrain GPT responses
+- Validate responses against Go structs
+- Type-safe data flow from AI → Backend → Frontend
+
+### Development Workflow
+1. Define types in `/shared` first
+2. Implement backend endpoints with validation
+3. Create frontend components with type safety
+4. Test integration between all layers
 
 ## Dependencies
 
-TBD
+### Frontend
+- **Next.js 14.2.16**: React framework with App Router
+- **React 18**: Core React library
+- **TypeScript 5**: Type safety and tooling
+- **Tailwind CSS 3.4**: Utility-first CSS framework
+- **Autoprefixer**: CSS vendor prefixes
+
+### Backend
+- **Fiber v2**: Fast Go web framework
+- **Go 1.21+**: Programming language
+- **validator**: Request validation library (planned)
+
+### Shared
+- **Go modules**: Dependency management
+- **TypeScript**: Type definitions
+- **JSON Schema**: Validation and AI integration
+
+### Development
+- **Bun**: Fast JavaScript runtime and package manager
+- **ESLint**: Code linting for frontend
+- **Git**: Version control with feature branches
 
 ## Development Tools & CI/CD
 
-The project includes:
+### Current Tools
+- **Git**: Feature branch workflow with PR review
+- **GitHub**: Repository hosting and collaboration
+- **Bun**: Fast package manager for frontend
+- **Go modules**: Dependency management for backend
+- **TypeScript**: Compile-time type checking
 
-- **GitHub Actions**: CI/CD pipeline with testing, linting, formatting, and security checks
-- **Code Quality**: TBD
-- **Security**: TBD
+### Planned CI/CD
+- **GitHub Actions**: Automated testing and deployment
+- **Code Quality**: ESLint, Go vet, and formatting
+- **Security**: Dependency scanning and security checks
 - **Dependabot**: Automated dependency updates
 
 ## Testing & Quality
 
-TBD
+### Current Status
+- **Type Safety**: TypeScript + Go struct validation
+- **Manual Testing**: Health endpoint verification
+- **Code Structure**: Clean separation of concerns
+
+### Planned Testing
+- **Frontend**: Jest + React Testing Library
+- **Backend**: Go testing package with API tests
+- **Integration**: End-to-end API testing
+- **Validation**: JSON Schema compliance testing
 
 ## Development Guidelines
 
-TBD
+### General Principles
+1. **Type Safety First**: Use shared types across all layers
+2. **API Contract**: Define schemas before implementation
+3. **Feature Branches**: Never commit directly to main
+4. **Clean Architecture**: Separate concerns between layers
+5. **Documentation**: Update README and CLAUDE.md for changes
 
 ### Code Style
 
-TBD
+#### Frontend (TypeScript/React)
+- Use TypeScript strict mode
+- Import shared types from `/shared`
+- Follow Next.js App Router conventions
+- Use Tailwind CSS utility classes
+- Prefer functional components with hooks
+
+#### Backend (Go)
+- Use Go standard formatting (`go fmt`)
+- Validate requests with struct tags
+- Handle errors gracefully without panics
+- Use Fiber v2 conventions for handlers
+- Import shared types from `potarin-shared`
+
+#### Shared Types
+- Define types in both TypeScript and Go
+- Keep JSON Schema in sync with types
+- Use clear, descriptive naming
+- Add validation tags to Go structs
 
 ## Contributing
 
