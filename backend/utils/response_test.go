@@ -361,7 +361,7 @@ func TestIntegrationAPIResponse(t *testing.T) {
 		req := httptest.NewRequest("GET", "/success", nil)
 		resp, err := app.Test(req)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		assert.Equal(t, fiber.StatusOK, resp.StatusCode)
 
@@ -382,7 +382,7 @@ func TestIntegrationAPIResponse(t *testing.T) {
 		req := httptest.NewRequest("GET", "/error", nil)
 		resp, err := app.Test(req)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 
@@ -404,7 +404,7 @@ func TestIntegrationAPIResponse(t *testing.T) {
 		req := httptest.NewRequest("GET", "/validation", nil)
 		resp, err := app.Test(req)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		assert.Equal(t, fiber.StatusBadRequest, resp.StatusCode)
 
@@ -426,7 +426,7 @@ func TestIntegrationAPIResponse(t *testing.T) {
 		req := httptest.NewRequest("GET", "/internal", nil)
 		resp, err := app.Test(req)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		assert.Equal(t, fiber.StatusInternalServerError, resp.StatusCode)
 
@@ -446,7 +446,7 @@ func TestIntegrationAPIResponse(t *testing.T) {
 		req := httptest.NewRequest("GET", "/service-unavailable", nil)
 		resp, err := app.Test(req)
 		require.NoError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		assert.Equal(t, fiber.StatusServiceUnavailable, resp.StatusCode)
 

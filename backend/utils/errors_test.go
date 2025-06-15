@@ -94,7 +94,7 @@ func TestAppError_WithDetail(t *testing.T) {
 	assert.Equal(t, "invalid-email", detail.Value)
 
 	// Test adding multiple details
-	err.WithDetail("password", "too_short", "パスワードは8文字以上にしてください", "abc")
+	_ = err.WithDetail("password", "too_short", "パスワードは8文字以上にしてください", "abc")
 
 	require.Len(t, err.Details, 2)
 	assert.Equal(t, "password", err.Details[1].Field)
