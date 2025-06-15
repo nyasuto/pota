@@ -78,7 +78,7 @@ func TestAppError_Error(t *testing.T) {
 
 func TestAppError_WithDetail(t *testing.T) {
 	err := NewAppError(ValidationError, "入力データが無効です")
-	
+
 	result := err.WithDetail("email", "invalid_format", "有効なメールアドレスを入力してください", "invalid-email")
 
 	// Should return the same instance
@@ -86,7 +86,7 @@ func TestAppError_WithDetail(t *testing.T) {
 
 	// Should have the detail added
 	require.Len(t, err.Details, 1)
-	
+
 	detail := err.Details[0]
 	assert.Equal(t, "email", detail.Field)
 	assert.Equal(t, "invalid_format", detail.Code)
@@ -95,7 +95,7 @@ func TestAppError_WithDetail(t *testing.T) {
 
 	// Test adding multiple details
 	err.WithDetail("password", "too_short", "パスワードは8文字以上にしてください", "abc")
-	
+
 	require.Len(t, err.Details, 2)
 	assert.Equal(t, "password", err.Details[1].Field)
 }
@@ -103,7 +103,7 @@ func TestAppError_WithDetail(t *testing.T) {
 func TestAppError_WithRequestID(t *testing.T) {
 	err := NewAppError(ValidationError, "入力データが無効です")
 	requestID := "req-123456"
-	
+
 	result := err.WithRequestID(requestID)
 
 	// Should return the same instance
@@ -132,7 +132,7 @@ func TestNewValidationError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := NewValidationError(tt.message)
-			
+
 			assert.Equal(t, ValidationError, err.Code)
 			assert.Equal(t, tt.expected, err.Message)
 		})
@@ -160,7 +160,7 @@ func TestNewInternalError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := NewInternalError(tt.message)
-			
+
 			assert.Equal(t, InternalError, err.Code)
 			assert.Equal(t, tt.expected, err.Message)
 		})
@@ -188,7 +188,7 @@ func TestNewServiceUnavailableError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := NewServiceUnavailableError(tt.service)
-			
+
 			assert.Equal(t, ServiceUnavailable, err.Code)
 			assert.Equal(t, tt.expected, err.Message)
 		})
@@ -229,7 +229,7 @@ func TestNewExternalAPIError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := NewExternalAPIError(tt.service, tt.inputError)
-			
+
 			assert.Equal(t, ExternalAPIError, err.Code)
 			assert.Equal(t, tt.expectedMsg, err.Message)
 
@@ -267,7 +267,7 @@ func TestNewProcessingError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := NewProcessingError(tt.message)
-			
+
 			assert.Equal(t, ProcessingError, err.Code)
 			assert.Equal(t, tt.expected, err.Message)
 		})
